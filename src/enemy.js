@@ -88,6 +88,28 @@ export function updateEnemies(dt) {
     if (e.flashTimer > 0) e.flashTimer -= dt;
     if (e.deflectFlash > 0) e.deflectFlash -= dt;
   }
+
+  // Separate overlapping enemies
+  for (let i = 0; i < enemies.length; i++) {
+    for (let j = i + 1; j < enemies.length; j++) {
+      const a = enemies[i];
+      const b = enemies[j];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distSq = dx * dx + dy * dy;
+      const minDist = a.radius + b.radius;
+      if (distSq < minDist * minDist && distSq > 0) {
+        const dist = Math.sqrt(distSq);
+        const overlap = (minDist - dist) / 2;
+        const nx = dx / dist;
+        const ny = dy / dist;
+        a.x -= nx * overlap;
+        a.y -= ny * overlap;
+        b.x += nx * overlap;
+        b.y += ny * overlap;
+      }
+    }
+  }
 }
 
 export function drawEnemies(ctx) {
