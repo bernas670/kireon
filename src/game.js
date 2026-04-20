@@ -5,6 +5,7 @@ import { enemies, clearEnemies, spawnEnemy, updateEnemies, drawEnemies } from '.
 import { clearCombat, createSlash, updateCombat, drawSlashes } from './combat.js';
 import { clearParticles, updateParticles, drawParticles } from './particles.js';
 import { drawHUD } from './hud.js';
+import { initAudio, playSlash } from './audio.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -32,6 +33,7 @@ function init() {
 
 // Input
 canvas.addEventListener('click', (e) => {
+  initAudio();
   if (player.dead) { init(); return; }
   tryDash(e.clientX, e.clientY);
 });
@@ -45,6 +47,7 @@ function update(dt) {
 
   const slashResult = updatePlayer(dt);
   if (slashResult) {
+    playSlash();
     createSlash(slashResult.sx, slashResult.sy, slashResult.ex, slashResult.ey);
   }
 

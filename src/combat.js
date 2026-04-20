@@ -1,4 +1,5 @@
 import { SLASH_WIDTH, SLASH_HIT_LIFETIME, SLASH_VISUAL_LIFETIME, HIT_STOP_DURATION, SCREEN_SHAKE_INTENSITY, SCREEN_SHAKE_DURATION, KNOCKBACK_FORCE, ARMOR_GAP_ANGLE } from './config.js';
+import { playEnemyHit, playArmorDeflect } from './audio.js';
 import { pointToSegmentDist, normalizeAngle, segmentCircleEntry } from './math.js';
 import { enemies, removeEnemy } from './enemy.js';
 import { damagePlayer } from './player.js';
@@ -84,6 +85,7 @@ function resolveSlashHit(enemyIndex, slash) {
   } else {
     // Hit the armor shell
     e.deflectFlash = 0.15;
+    playArmorDeflect();
     spawnDeflectParticles(e.x, e.y);
     triggerShake(3, 0.06);
 
@@ -98,6 +100,7 @@ function killEnemy(index, slash) {
   const e = enemies[index];
   score++;
 
+  playEnemyHit(!!e.armor);
   triggerHitStop(HIT_STOP_DURATION);
   triggerShake(SCREEN_SHAKE_INTENSITY, SCREEN_SHAKE_DURATION);
 

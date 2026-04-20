@@ -1,4 +1,5 @@
 import { PLAYER_RADIUS, PLAYER_MAX_HP, DAMAGE_INVULN, DASH_SPEED, DASH_COOLDOWN, DASH_MIN_DIST } from './config.js';
+import { playPlayerHit } from './audio.js';
 import { triggerShake, triggerHitStop } from './feedback.js';
 import { spawnDamageParticles, spawnDeathParticles } from './particles.js';
 
@@ -77,6 +78,7 @@ export function damagePlayer(amount, fromX, fromY) {
   player.hp -= amount;
   player.invulnTimer = DAMAGE_INVULN;
   player.damageFlash = 0.3;
+  playPlayerHit();
 
   // Knockback away from source
   const dx = player.x - fromX;
