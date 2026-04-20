@@ -1,6 +1,6 @@
 import { SPAWN_INTERVAL } from './config.js';
 import { updateFeedback, applyShake } from './feedback.js';
-import { player, resetPlayer, tryDash, updatePlayer, drawPlayer } from './player.js';
+import { player, resetPlayer, tryDash, trySlashBack, updatePlayer, drawPlayer } from './player.js';
 import { enemies, clearEnemies, spawnEnemy, updateEnemies, drawEnemies } from './enemy.js';
 import { clearCombat, createSlash, updateCombat, drawSlashes } from './combat.js';
 import { clearParticles, updateParticles, drawParticles } from './particles.js';
@@ -36,6 +36,13 @@ canvas.addEventListener('click', (e) => {
   initAudio();
   if (player.dead) { init(); return; }
   tryDash(e.clientX, e.clientY);
+});
+
+canvas.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  initAudio();
+  if (player.dead) return;
+  trySlashBack();
 });
 
 // Update

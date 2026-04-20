@@ -15,6 +15,8 @@ export const player = {
   invulnTimer: 0,
   damageFlash: 0,
   dead: false,
+  lastPos: null,
+  afterimageSnapTimer: 0,
 };
 
 export function resetPlayer(cx, cy) {
@@ -28,6 +30,13 @@ export function resetPlayer(cx, cy) {
   player.invulnTimer = 0;
   player.damageFlash = 0;
   player.dead = false;
+  player.lastPos = null;
+  player.afterimageSnapTimer = 0;
+}
+
+export function trySlashBack() {
+  if (!player.lastPos) return;
+  tryDash(player.lastPos.x, player.lastPos.y);
 }
 
 export function tryDash(tx, ty) {
@@ -49,6 +58,7 @@ export function updatePlayer(dt) {
   if (player.cooldownTimer > 0) player.cooldownTimer -= dt;
   if (player.invulnTimer > 0) player.invulnTimer -= dt;
   if (player.damageFlash > 0) player.damageFlash -= dt;
+  if (player.afterimageSnapTimer > 0) player.afterimageSnapTimer -= dt;
 
   if (!player.isDashing) return null;
 
@@ -60,6 +70,8 @@ export function updatePlayer(dt) {
   player.y = player.dashStart.y + (player.dashTarget.y - player.dashStart.y) * eased;
 
   if (t >= 1) {
+    player.lastPos = { x: player.dashStart.x, y: player.dashStart.y };
+    player.afterimageSnapTimer = 0.3;
     player.isDashing = false;
     player.cooldownTimer = DASH_COOLDOWN;
     // Return slash data for the combat system to create
@@ -102,6 +114,30 @@ export function drawPlayer(ctx) {
   if (player.dead) return;
 
   ctx.save();
+
+  // Afterimage at last position
+  if (player.lastPos) {
+    const flicker = Math.sin(Date.now() * 0.008) * 0.08 + 0.22;
+    const snapBoost = player.afterimageSnapTimer > 0 ? (player.afterimageSnapTimer / 0.3) * 0.45 : 0;
+    const alpha = flicker + snapBoost;
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = '#4488ff';
+    ctx.shadowColor = '#4488ff';
+    ctx.shadowBlur = snapBoost > 0.1 ? 30 : 12;
+    ctx.beginPath();
+    ctx.arc(player.lastPos.x, player.lastPos.y, PLAYER_RADIUS, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#88bbff';
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.arc(player.lastPos.x, player.lastPos.y, PLAYER_RADIUS * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+  }
 
   // Dash trail
   if (player.isDashing && player.dashStart) {
