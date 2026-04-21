@@ -1,4 +1,5 @@
 import { PLAYER_MAX_HP } from './config.js';
+import { mechanics } from './mechanics.js';
 import { player } from './player.js';
 import { score } from './combat.js';
 
@@ -28,7 +29,9 @@ export function drawHUD(ctx, canvasW, canvasH) {
 
   ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.font = '13px monospace';
-  ctx.fillText('Click to dash & slash  |  Gap in armor = weak spot  |  Spiked armor hurts on deflect', 20, canvasH - 20);
+  let hints = 'Click to dash & slash  |  Gap in armor = weak spot  |  Spiked armor hurts on deflect';
+  if (mechanics.afterimage) hints += '  |  Right-click = backslash';
+  ctx.fillText(hints, 20, canvasH - 20);
 
   // Death screen
   if (player.dead) {

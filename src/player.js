@@ -1,4 +1,5 @@
 import { PLAYER_RADIUS, PLAYER_MAX_HP, DAMAGE_INVULN, DASH_SPEED, DASH_COOLDOWN, DASH_MIN_DIST } from './config.js';
+import { mechanics } from './mechanics.js';
 import { playPlayerHit } from './audio.js';
 import { triggerShake, triggerHitStop } from './feedback.js';
 import { spawnDamageParticles, spawnDeathParticles } from './particles.js';
@@ -70,8 +71,10 @@ export function updatePlayer(dt) {
   player.y = player.dashStart.y + (player.dashTarget.y - player.dashStart.y) * eased;
 
   if (t >= 1) {
-    player.lastPos = { x: player.dashStart.x, y: player.dashStart.y };
-    player.afterimageSnapTimer = 0.3;
+    if (mechanics.afterimage) {
+      player.lastPos = { x: player.dashStart.x, y: player.dashStart.y };
+      player.afterimageSnapTimer = 0.3;
+    }
     player.isDashing = false;
     player.cooldownTimer = DASH_COOLDOWN;
     // Return slash data for the combat system to create
@@ -116,7 +119,7 @@ export function drawPlayer(ctx) {
   ctx.save();
 
   // Afterimage at last position
-  if (player.lastPos) {
+  if (mechanics.afterimage && player.lastPos) {
     const flicker = Math.sin(Date.now() * 0.008) * 0.08 + 0.22;
     const snapBoost = player.afterimageSnapTimer > 0 ? (player.afterimageSnapTimer / 0.3) * 0.45 : 0;
     const alpha = flicker + snapBoost;
