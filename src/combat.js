@@ -5,6 +5,7 @@ import { enemies, removeEnemy } from './enemy.js';
 import { damagePlayer } from './player.js';
 import { triggerShake, triggerHitStop } from './feedback.js';
 import { spawnHitParticles, spawnDeflectParticles } from './particles.js';
+import { resolveSlashCombo } from './combo.js';
 
 export let slashes = [];
 export let score = 0;
@@ -23,6 +24,11 @@ export function createSlash(sx, sy, ex, ey) {
     hitElapsed: 0,
     visualElapsed: 0,
     hitEnemies: new Set(),
+    // Combo tracking per slash
+    killCount: 0,
+    hitArmor: false,
+    totalBaseScore: 0,
+    comboEvaluated: false,
   });
 }
 
@@ -43,6 +49,13 @@ export function updateCombat(dt) {
           resolveSlashHit(j, s);
         }
       }
+    }
+
+    // Evaluate combo when hit phase ends
+    if (s.hitElapsed > s.hitLifetime && !s.comboEvaluated) {
+      s.comboEvaluated = true;
+      const gained = resolveSlashCombo(s.killCount, s.hitArmor, s.totalBaseScore);
+      score += gained;
     }
 
     if (s.visualElapsed > s.visualLifetime) {
@@ -83,7 +96,9 @@ function resolveSlashHit(enemyIndex, slash) {
     // Clean hit through the gap — no damage to player, even on spiked armor
     killEnemy(enemyIndex, slash);
   } else {
-    // Hit the armor shell
+    // Hit the armor shell — marks this slash as having an invalid hit
+    slash.hitArmor = true;
+
     e.deflectFlash = 0.15;
     playArmorDeflect();
     spawnDeflectParticles(e.x, e.y);
@@ -98,11 +113,20 @@ function resolveSlashHit(enemyIndex, slash) {
 
 function killEnemy(index, slash) {
   const e = enemies[index];
-  score++;
+
+  // Track kill for combo evaluation
+  slash.killCount++;
+  slash.totalBaseScore += (e.baseScore || 100);
 
   playEnemyHit(!!e.armor);
-  triggerHitStop(HIT_STOP_DURATION);
-  triggerShake(SCREEN_SHAKE_INTENSITY, SCREEN_SHAKE_DURATION);
+
+  // Scale hit stop and shake with multi-kills
+  const killScale = Math.min(slash.killCount, 4);
+  triggerHitStop(HIT_STOP_DURATION * (1 + (killScale - 1) * 0.4));
+  triggerShake(
+    SCREEN_SHAKE_INTENSITY * (1 + (killScale - 1) * 0.3),
+    SCREEN_SHAKE_DURATION * (1 + (killScale - 1) * 0.2)
+  );
 
   const angle = Math.atan2(slash.ey - slash.sy, slash.ex - slash.sx);
   e.knockback.vx = Math.cos(angle) * KNOCKBACK_FORCE;

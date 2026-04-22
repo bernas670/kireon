@@ -17,6 +17,7 @@ export function createEnemy(x, y, overrides) {
     color: '#cc2244',
     glowColor: '#ff2244',
     armor: null,
+    baseScore: 100,
     knockback: { vx: 0, vy: 0 },
     flashTimer: 0,
     deflectFlash: 0,
@@ -46,6 +47,7 @@ export function spawnEnemy(canvasW, canvasH) {
       color: '#993366',
       glowColor: '#cc44aa',
       armor: { gapAngle: Math.random() * Math.PI * 2, spiked: true },
+      baseScore: 300,
     }));
   } else if (roll < 0.40) {
     enemies.push(createEnemy(x, y, {
@@ -53,9 +55,10 @@ export function spawnEnemy(canvasW, canvasH) {
       color: '#cc4444',
       glowColor: '#ff4444',
       armor: { gapAngle: Math.random() * Math.PI * 2, spiked: false },
+      baseScore: 200,
     }));
   } else {
-    enemies.push(createEnemy(x, y, {}));
+    enemies.push(createEnemy(x, y, { baseScore: 100 }));
   }
 }
 

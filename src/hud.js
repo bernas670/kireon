@@ -2,6 +2,7 @@ import { PLAYER_MAX_HP } from './config.js';
 import { mechanics } from './mechanics.js';
 import { player } from './player.js';
 import { score } from './combat.js';
+import { combo, drawComboHUD, drawComboPopups } from './combo.js';
 
 export function drawHUD(ctx, canvasW, canvasH) {
   // Health bar
@@ -23,9 +24,16 @@ export function drawHUD(ctx, canvasW, canvasH) {
     ctx.beginPath(); ctx.moveTo(px, hbY); ctx.lineTo(px, hbY + hbH); ctx.stroke();
   }
 
+  // Score display
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
   ctx.font = '14px monospace';
-  ctx.fillText(`KILLS: ${score}`, 20, 44);
+  ctx.fillText(`SCORE: ${score}`, 20, 44);
+
+  // Combo HUD (top right)
+  drawComboHUD(ctx, canvasW);
+
+  // Combo popups (floating text near player)
+  drawComboPopups(ctx);
 
   ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.font = '13px monospace';

@@ -7,6 +7,7 @@ const SOUNDS = {
   enemy_hit:         { src: '/sounds/enemy_hit.mp3',         volume: 0.7, pitchRange: 0.12 },
   enemy_hit_armored: { src: '/sounds/enemy_hit_armored.mp3', volume: 0.7, pitchRange: 0.12 },
   armor_deflect:     { src: '/sounds/armor_deflect.mp3',     volume: 0.75, pitchRange: 0.08 },
+  combo_break:       { src: '/sounds/combo_break.mp3',      volume: 0.6,  pitchRange: 0.05 },
 };
 
 async function loadBuffer(name, def) {
@@ -64,4 +65,8 @@ export function playEnemyHit(hasArmor) {
 
 export function playArmorDeflect() {
   play('armor_deflect');
+}
+
+export function playComboBreak() {
+  play('combo_break');
 }

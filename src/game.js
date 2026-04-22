@@ -7,6 +7,7 @@ import { clearParticles, updateParticles, drawParticles } from './particles.js';
 import { drawHUD } from './hud.js';
 import { initAudio, playSlash } from './audio.js';
 import { mechanics, mechanicsList } from './mechanics.js';
+import { resetCombo, updateComboPopups } from './combo.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -172,6 +173,7 @@ function init() {
   clearEnemies();
   clearCombat();
   clearParticles();
+  resetCombo();
   spawnTimer = 0;
   lastTime = 0;
 
@@ -222,6 +224,7 @@ function update(dt) {
   updateCombat(dt);
   updateEnemies(dt);
   updateParticles(dt);
+  updateComboPopups(dt);
 
   // Spawning
   spawnTimer += dt;

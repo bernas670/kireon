@@ -3,6 +3,7 @@ import { mechanics } from './mechanics.js';
 import { playPlayerHit } from './audio.js';
 import { triggerShake, triggerHitStop } from './feedback.js';
 import { spawnDamageParticles, spawnDeathParticles } from './particles.js';
+import { breakCombo } from './combo.js';
 
 export const player = {
   x: 0, y: 0,
@@ -94,6 +95,7 @@ export function damagePlayer(amount, fromX, fromY) {
   player.invulnTimer = DAMAGE_INVULN;
   player.damageFlash = 0.3;
   playPlayerHit();
+  breakCombo();
 
   // Knockback away from source
   const dx = player.x - fromX;
