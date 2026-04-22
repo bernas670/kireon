@@ -243,7 +243,7 @@ function draw() {
   }
 
   ctx.save();
-  applyShake(ctx);
+  if (!player.dead) applyShake(ctx);
 
   // Background
   ctx.fillStyle = '#0a0a0f';
